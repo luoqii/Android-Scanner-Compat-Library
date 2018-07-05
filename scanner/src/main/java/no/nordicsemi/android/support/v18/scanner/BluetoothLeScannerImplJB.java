@@ -28,15 +28,18 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.RequiresPermission;
+import android.util.Log;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /* package */
 @SuppressWarnings("deprecation")
 class BluetoothLeScannerImplJB extends BluetoothLeScannerCompat implements BluetoothAdapter.LeScanCallback {
+	private static final String TAG = BluetoothLeScannerImplJB.class.getSimpleName();
 	private final BluetoothAdapter mBluetoothAdapter;
 	private final Map<ScanCallback, ScanCallbackWrapper> mWrappers;
 	private long mPowerSaveRestInterval;
@@ -168,6 +171,7 @@ class BluetoothLeScannerImplJB extends BluetoothLeScannerCompat implements Bluet
 
 	@Override
 	public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord) {
+		Log.d(TAG, "onLeScan. mac:" + device.getAddress());
 		final ScanResult scanResult = new ScanResult(device, ScanRecord.parseFromBytes(scanRecord), rssi, SystemClock.elapsedRealtimeNanos());
 
 		synchronized (mWrappers) {

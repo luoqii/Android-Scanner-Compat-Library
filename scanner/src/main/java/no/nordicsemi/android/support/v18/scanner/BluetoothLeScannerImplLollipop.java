@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresPermission;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,10 +122,12 @@ import java.util.Map;
 	}
 
 	private class ScanCallbackImpl extends android.bluetooth.le.ScanCallback {
+		private final String TAG = ScanCallbackImpl.class.getSimpleName();
 		private long mLastBatchTimestamp;
 
 		@Override
 		public void onScanResult(final int callbackType, final android.bluetooth.le.ScanResult _result) {
+			Log.d(TAG, "onScanResult. callbackType" + callbackType + " result:" + _result.getDevice().getAddress());
 			final ScanCallbackWrapper wrapper = mWrappers2.get(this);
 			if (wrapper != null) {
 				final ScanResult result = toImpl(_result);
@@ -134,6 +137,14 @@ import java.util.Map;
 
 		@Override
 		public void onBatchScanResults(final List<android.bluetooth.le.ScanResult> _results) {
+			String resultsStr = "empty mac.";
+			if (null != _results && _results.size() > 0){
+				resultsStr = "";
+				for (android.bluetooth.le.ScanResult r : _results){
+					resultsStr += r.getDevice().getAddress() + " ";
+				}
+			}
+			Log.d(TAG, "onScanResult. results:" + resultsStr);
 			final ScanCallbackWrapper wrapper = mWrappers2.get(this);
 			if (wrapper != null) {
 				// On several phones the onBatchScanResults is called twice for every batch.
@@ -157,6 +168,7 @@ import java.util.Map;
 		@Override
 		@RequiresPermission(allOf = {Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH})
 		public void onScanFailed(final int errorCode) {
+			Log.d(TAG, "onScanFailed. errorCode:" + errorCode);
 			final ScanCallbackWrapper wrapper = mWrappers2.get(this);
 			if (wrapper == null)
 				return;
